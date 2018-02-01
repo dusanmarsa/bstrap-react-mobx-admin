@@ -54,11 +54,11 @@ const BStrapDatagrid = ({
   }
 
   const listActionsRender = listActions ? (
-    <th key={'_actions'}>{ listActions() }</th>
+    <th key={'_actions'}>{listActions()}</th>
   ) : null
 
   const listActionDeleteRender = listActionDelete ? (
-    <th key={'_actions-delete'}>{ listActionDelete() }</th>
+    <th key={'_actions-delete'}>{listActionDelete()}</th>
   ) : null
 
   function _renderCell (row, name, creatorFn, rowId) {
@@ -72,6 +72,12 @@ const BStrapDatagrid = ({
   function _renderRowActions (row) {
     return listActions ? (
       <td key={'datagrid-actions'}>{listActions(row)}</td>
+    ) : null
+  }
+
+  function _renderRowActionDelete (row) {
+    return listActionDelete ? (
+      <td key={'datagrid-actions-delete'}>{listActionDelete(row)}</td>
     ) : null
   }
 
@@ -97,7 +103,7 @@ const BStrapDatagrid = ({
           ) : null
         }
         {
-          buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions)
+          buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
         }
       </tr>
     )
