@@ -68,7 +68,7 @@ const GlobalErrors = observer(({errors}) => {
     } else if ((e.ctrlKey || e.metaKey) && e.keyCode === 83) {
       // ctrl+s
       e.onKeyDownActions = true
-      this.props.store.isEntityChanged && this.props.store.saveEntity()
+      this.props.store.isEntityChanged && this.props.store.save()
     }
 
     e.onKeyDownActions && e.preventDefault() && e.stopPropagation()
