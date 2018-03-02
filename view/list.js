@@ -103,7 +103,7 @@ BStrapListView.propTypes = {
   renderOuter: PropTypes.func,
   onAddClicked: PropTypes.func,
   fields: PropTypes.arrayOf(PropTypes.func).isRequired,
-  filters: PropTypes.object,
+  filters: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   listActions: PropTypes.func,
   batchActions: PropTypes.func,
   perPageOptions: PropTypes.arrayOf(PropTypes.number)
