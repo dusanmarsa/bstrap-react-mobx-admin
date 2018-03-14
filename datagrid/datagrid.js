@@ -5,6 +5,7 @@ import { Checkbox, Button } from 'react-bootstrap'
 import {
   buildHeaders, buildCells
 } from 'react-mobx-admin/components/common/datagrid/table'
+import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 
 const BStrapHeader = ({label, sort, name, onSort}) => {
   //
@@ -14,6 +15,7 @@ const BStrapHeader = ({label, sort, name, onSort}) => {
   function _onDownClick (e) {
     onSort(name, sort === 'DESC' ? null : 'DESC')
   }
+
   return (
     <div>
       <div>{label}&nbsp;</div>
@@ -30,6 +32,7 @@ const BStrapHeader = ({label, sort, name, onSort}) => {
     </div>
   )
 }
+
 BStrapHeader.propTypes = {
   label: PropTypes.string.isRequired,
   sort: PropTypes.string,
@@ -40,7 +43,7 @@ BStrapHeader.propTypes = {
 const BStrapDatagrid = ({
   state, attrs, fields, titles, rowId, isSelected, noSort,
   onRowSelection, onSort, sortstate, listActions, listActionDelete, allSelected,
-  filters
+  filters, dragbleListEntity
 }) => {
   //
   function _renderHeader (name, label, sort, onSort) {
@@ -86,28 +89,44 @@ const BStrapDatagrid = ({
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
-
-  let tableChildren = state.loading ? (
-    <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
-  ) : state.items.length === 0 ? (
-    <tr><td>EMPTY</td></tr>
-  ) : state.items.map((r, i) => {
-    const selected = selectable && isSelected(i)
-    return (
-      <tr selected={selected} key={i}>
-        {
-          selectable ? (
-            <td key='chbox'>
-              <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
-            </td>
-          ) : null
-        }
-        {
-          buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
-        }
-      </tr>
+  const SortableItem = SortableElement(({children}) => <tr>{children}</tr> )
+  const SortableWrapper = SortableContainer(({ items, buildCells  }) => {
+    return (<tbody>
+      {
+        items.map((r, index) => (
+          <SortableItem 
+            key={index}  
+            index={dragbleListEntity.editIndex ? dragbleListEntity.editIndex(index) : index} 
+            disabled={dragbleListEntity.disableFn(r)} > 
+              { buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete) }
+          </SortableItem>
+        ))
+      }
+      </tbody>
     )
   })
+
+  let tableChildren = state.loading 
+    ? <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
+    : state.items.length === 0
+      ? tableChildren = <tr><td>EMPTY</td></tr>
+      : state.items.map((r, i) => {
+          const selected = selectable && isSelected(i)
+          return (
+            <tr selected={selected} key={i}>
+              {
+                selectable ? (
+                  <td key='chbox'>
+                    <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
+                  </td>
+                ) : null
+              }
+              {
+                buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
+              }
+            </tr>
+          )
+        })
 
   return (
     <table className='table table-sm'>
@@ -140,7 +159,15 @@ const BStrapDatagrid = ({
           }
         </thead>
       ) : null}
-      <tbody>{tableChildren}</tbody>
+      {
+        dragbleListEntity 
+          ? <SortableWrapper 
+              items={state.items} 
+              buildCells={buildCells} 
+              onSortEnd={dragbleListEntity.onDragEnd}
+              pressDelay={dragbleListEntity.dragToggleDelay} /> 
+          : <tbody>{tableChildren}</tbody>
+      }
     </table>
   )
 }
