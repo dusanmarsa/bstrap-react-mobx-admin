@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {ListStore} from 'react-mobx-admin'
 import Datagrid from '../datagrid/datagrid'
 import Filters from '../datagrid/filters'
 import Pagination from '../datagrid/pagination'
@@ -114,7 +113,7 @@ const BStrapListView = ({
 }
 
 BStrapListView.propTypes = {
-  store: PropTypes.instanceOf(ListStore).isRequired,
+  store: PropTypes.object.isRequired,
   onAddClicked: PropTypes.func,
   headerCreator: PropTypes.func,
   fieldCreator: PropTypes.func.isRequired,

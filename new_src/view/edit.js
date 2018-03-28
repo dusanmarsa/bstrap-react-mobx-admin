@@ -1,7 +1,6 @@
 import React from 'react'
 import {observer} from 'mobx-react'
 import PropTypes from 'prop-types'
-import {ManipStore} from 'react-mobx-admin'
 
 const _SubmitButton = ({ errors, onSubmit, enabled, children, ...rest }) => {
   return errors ? (

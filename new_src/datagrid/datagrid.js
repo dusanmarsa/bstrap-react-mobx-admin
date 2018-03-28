@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { Checkbox, Button } from 'react-bootstrap'
-import {buildTableHeaders} from 'react-mobx-admin'
+import {buildTableHeaders} from 'react-mobx-admin/new_src/component_utils'
 
 const BStrapHeader = ({children, sort, name, onSort}) => {
   //
