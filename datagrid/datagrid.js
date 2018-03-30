@@ -43,7 +43,7 @@ BStrapHeader.propTypes = {
 const BStrapDatagrid = ({
   state, attrs, fields, titles, rowId, isSelected, noSort,
   onRowSelection, onSort, sortstate, listActions, listActionDelete, allSelected,
-  filters, dragbleListEntity
+  filters, dragbleListEntity, customRowStyleClass
 }) => {
   //
   function _renderHeader (name, label, sort, onSort) {
@@ -89,7 +89,7 @@ const BStrapDatagrid = ({
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
-  const SortableItem = SortableElement(({children}) => <tr>{children}</tr> )
+  const SortableItem = SortableElement(({children}) => <tr className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' } >{children}</tr> )
   const SortableWrapper = SortableContainer(({ items, buildCells  }) => {
     return (<tbody>
       {
@@ -113,7 +113,7 @@ const BStrapDatagrid = ({
       : state.items.map((r, i) => {
           const selected = selectable && isSelected(i)
           return (
-            <tr selected={selected} key={i}>
+            <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
               {
                 selectable ? (
                   <td key='chbox'>
