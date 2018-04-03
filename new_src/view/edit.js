@@ -25,7 +25,7 @@ const GlobalErrors = observer(({errors}) => {
 @observer class EditView extends React.Component {
 
   static propTypes = {
-    store: PropTypes.instanceOf(ManipStore).isRequired,
+    store: PropTypes.object.isRequired,
     onSave: PropTypes.func,
     onReturn2list: PropTypes.func,
     options: PropTypes.object
