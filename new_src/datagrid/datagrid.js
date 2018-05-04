@@ -13,8 +13,9 @@ const BStrapHeader = ({children, sort, name, onSort}) => {
     onSort(name, sort === 'DESC' ? null : 'DESC')
   }
   return (
-    <div>
-      {onSort && (
+    <div className='header'>
+      <div className='capt'>{children}</div>
+      {onSort ? (
         <div className='sort-buttons-box'>
           <Button bsSize='xsmall' bsStyle={sort === 'ASC' ? 'primary' : 'default'} onClick={_onUpClick}>
             <span className='glyphicon glyphicon-chevron-up' />
@@ -23,8 +24,7 @@ const BStrapHeader = ({children, sort, name, onSort}) => {
             <span className='glyphicon glyphicon-chevron-down' />
           </Button>
         </div>
-      )}
-      <div>{children}</div>
+      ) : (<div className='sort-buttons-box'/>)}
     </div>
   )
 }
