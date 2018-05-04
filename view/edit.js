@@ -74,7 +74,7 @@ const GlobalErrors = observer(({errors}) => {
     e.onKeyDownActions && e.preventDefault() && e.stopPropagation()
   }
 
-  render({store, onSave, onReturn2list, children, buttonOnTop} = this.props) {
+  render({store, onSave, onReturn2list, children, buttonOnTop, options = {}} = this.props) {
 
     const loading = store.state === 'loading' || store.state === 'saving'
     onSave = onSave || store.save.bind(store)
@@ -111,6 +111,7 @@ const GlobalErrors = observer(({errors}) => {
             </button>
           ) : null
         }
+        { options.customActionButtons ? options.customActionButtons : null }
       </div>
     )
 
