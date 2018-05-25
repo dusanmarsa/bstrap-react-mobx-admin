@@ -91,35 +91,40 @@ const GlobalErrors = observer(({errors}) => {
     const cancelText = store.cancelText || 'cancel'
     const hasChanged = ()=>(store.isEntityChanged)
 
-    const actionButtons = (
-      <div className='btn-group' role='group'>
+    const actionButtons = (showCustomActionButtons = true) => ([
+      (<div className='btn-group buttons-vertical-align' role='group'>
         <SubmitButton onSubmit={onSave} errors={store.errors} hasChanged={hasChanged}>
-          {saveText}
+        <span className='glyphicon glyphicon-saved' />&nbsp; {saveText}
         </SubmitButton>
         {
           onReturn2list ? (
             <SubmitButton onSubmit={()=>onSave().then(()=>onReturn2list())}
               errors={store.errors} hasChanged={hasChanged}>
-              {store.saveAndReturnText || 'SAVE and return'}
+              <span className='glyphicon glyphicon-save' />&nbsp; {store.saveAndReturnText || 'SAVE and return'}
             </SubmitButton>
           ) : null
         }
         {
           onReturn2list ? (
             <button type='button' className='btn btn-default' onClick={onReturn2list}>
-              {cancelText}
+              <span className='glyphicon glyphicon-remove' />&nbsp; {cancelText}
             </button>
           ) : null
         }
-        { options.customActionButtons ? options.customActionButtons : null }
       </div>
+      ),(
+      <div className='buttons-vertical-align'>
+        {options.customActionButtons && showCustomActionButtons ? options.customActionButtons : null}
+      </div>
+      )]
+
     )
 
     return (
       <div className='card'>
         <div className='card-block'>
           <h4 className='card-title'>{title}</h4>
-          { buttonOnTop ? actionButtons : null }
+          { buttonOnTop ? actionButtons() : null }
         </div>
 
         <div className='card-block'>
@@ -128,7 +133,7 @@ const GlobalErrors = observer(({errors}) => {
         </div>
 
         <div className='card-block'>
-          { actionButtons }
+          { actionButtons(false) }
         </div>
       </div>
     )
