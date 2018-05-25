@@ -85,7 +85,9 @@ const BStrapListView = ({
             {
               onAddClicked ? (
                 <Button bsStyle='primary' onClick={() => onAddClicked(store)}>
-                  {options.addText ? options.addText() : '+ add new'}
+                  {options.addText
+                    ? options.addText()
+                    : <span><em key={0} className='glyphicon glyphicon-plus-sign' />&nbsp; New</span>}
                 </Button>
               ) : null
             }
