@@ -94,13 +94,13 @@ const GlobalErrors = observer(({errors}) => {
     const actionButtons = (
       <div className='btn-group' role='group'>
         <SubmitButton onSubmit={onSave} errors={store.errors} enabled={saveEnabled}>
-          {saveText}
+        <span className='glyphicon glyphicon-saved' />&nbsp; {saveText}
         </SubmitButton>
         {
           onReturn2list ? (
             <SubmitButton onSubmit={() => onSave().then(() => onReturn2list())}
               errors={store.errors} enabled={saveEnabled}>
-              {
+              <span className='glyphicon glyphicon-save' />&nbsp; {
                 options.saveAndReturnText
                   ? options.saveAndReturnText()
                   : 'SAVE and return'
@@ -111,7 +111,7 @@ const GlobalErrors = observer(({errors}) => {
         {
           onReturn2list ? (
             <button type='button' className='btn btn-default' onClick={onReturn2list}>
-              {cancelText}
+              <span className='glyphicon glyphicon-remove' />&nbsp; {cancelText}
             </button>
           ) : null
         }
