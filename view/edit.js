@@ -117,7 +117,6 @@ const GlobalErrors = observer(({errors}) => {
         {options.customActionButtons && showCustomActionButtons ? options.customActionButtons : null}
       </div>
       )]
-
     )
 
     return (

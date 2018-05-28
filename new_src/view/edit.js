@@ -91,8 +91,8 @@ const GlobalErrors = observer(({errors}) => {
     const cancelText = options.cancelText ? options.cancelText() : 'cancel'
     const saveEnabled = () => store.isSaveEnabled()
 
-    const actionButtons = (
-      <div className='btn-group' role='group'>
+    const actionButtons = (showCustomActionButtons = true) => ([
+      (<div className='btn-group buttons-vertical-align' role='group'>
         <SubmitButton onSubmit={onSave} errors={store.errors} enabled={saveEnabled}>
         <span className='glyphicon glyphicon-saved' />&nbsp; {saveText}
         </SubmitButton>
@@ -115,15 +115,19 @@ const GlobalErrors = observer(({errors}) => {
             </button>
           ) : null
         }
-        { options.customActionButtons ? options.customActionButtons : null }
       </div>
+      ),(
+      <div className='buttons-vertical-align'>
+        {options.customActionButtons && showCustomActionButtons ? options.customActionButtons : null}
+      </div>
+      )]
     )
 
     return (
       <div className='card'>
         <div className='card-block'>
           <h4 className='card-title'>{title}</h4>
-          { buttonsOnTop ? actionButtons : null }
+          { buttonsOnTop ? actionButtons() : null }
         </div>
 
         <div className='card-block'>
@@ -132,7 +136,7 @@ const GlobalErrors = observer(({errors}) => {
         </div>
 
         <div className='card-block'>
-          { actionButtons }
+          { actionButtons(false) }
         </div>
       </div>
     )
