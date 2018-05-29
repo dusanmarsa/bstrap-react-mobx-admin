@@ -25,7 +25,7 @@ const ChBoxSelect = ({
       <Checkbox key={idx} checked={checked(i.value)}
         disabled={disabled}
         onChange={onClick} inline>
-        {i.label}
+        {i.label ? i.label : i.text}
       </Checkbox>
     )
   })
