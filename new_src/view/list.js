@@ -66,6 +66,11 @@ const BStrapListView = ({
   )
   const filterRow = tableFilters ? Filters.FilterRow(tableFilters, store) : null
   const title = options.title ? options.title() : null
+  const refFn = (node, row) => {
+    if (row.id === store.scrollTo) {
+      node && node.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
+    }
+  }
 
   return (
     <div className='card'>
@@ -107,7 +112,7 @@ const BStrapListView = ({
           noSort={store.noSort}
           onRowSelection={onSelectionChange} isSelected={isSelected}
           allSelected={allSelected} filters={filterRow}
-          options={options} />
+          options={options} refFn={refFn} />
       </div>
       { pagination }
     </div>

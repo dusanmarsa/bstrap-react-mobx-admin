@@ -41,7 +41,7 @@ BStrapHeader.propTypes = {
 const BStrapDatagrid = ({
   state, attrs, fieldCreator, headerCreator, rowId, isSelected, noSort,
   onRowSelection, onSort, sortstate, listActions, listActionLeft, allSelected,
-  filters, TDComponent, TRComponent, TBodyComponent, options = {}
+  filters, TDComponent, TRComponent, TBodyComponent, refFn, options = {}
 }) => {
   const _renderTD = ({...rest}) => TDComponent ? (
     <TDComponent {...rest} /> // custom
@@ -88,7 +88,9 @@ const BStrapDatagrid = ({
     selectable && cells.push(_renderTD({
       key: 'chbox',
       children: (
-        <Checkbox checked={selected} inline onChange={() => onRowSelection(rowIdx)} />
+        <div ref={(node) => refFn && refFn(node, row)}>
+          <Checkbox checked={selected} inline onChange={() => onRowSelection(rowIdx)} />
+        </div>
       )
     }))
     listActionLeft && cells.push(_renderTD({key: 'lst-acts-l', children: listActionLeft(row)}))
