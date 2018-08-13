@@ -25,7 +25,7 @@ const GlobalErrors = observer(({errors}) => {
 @observer class EditView extends React.Component {
 
   static propTypes = {
-    store: PropTypes.instanceOf(ManipStore).isRequired,
+    store: PropTypes.object.isRequired,
     onSave: PropTypes.func,
     onReturn2list: PropTypes.func,
     options: PropTypes.object
@@ -91,16 +91,16 @@ const GlobalErrors = observer(({errors}) => {
     const cancelText = options.cancelText ? options.cancelText() : 'cancel'
     const saveEnabled = () => store.isSaveEnabled()
 
-    const actionButtons = (
-      <div className='btn-group' role='group'>
+    const actionButtons = (showCustomActionButtons = true) => ([
+      (<div className='btn-group buttons-vertical-align' role='group'>
         <SubmitButton onSubmit={onSave} errors={store.errors} enabled={saveEnabled}>
-          {saveText}
+        <span className='glyphicon glyphicon-saved' />&nbsp; {saveText}
         </SubmitButton>
         {
           onReturn2list ? (
             <SubmitButton onSubmit={() => onSave().then(() => onReturn2list())}
               errors={store.errors} enabled={saveEnabled}>
-              {
+              <span className='glyphicon glyphicon-save' />&nbsp; {
                 options.saveAndReturnText
                   ? options.saveAndReturnText()
                   : 'SAVE and return'
@@ -111,18 +111,23 @@ const GlobalErrors = observer(({errors}) => {
         {
           onReturn2list ? (
             <button type='button' className='btn btn-default' onClick={onReturn2list}>
-              {cancelText}
+              <span className='glyphicon glyphicon-remove' />&nbsp; {cancelText}
             </button>
           ) : null
         }
       </div>
+      ),(
+      <div className='buttons-vertical-align'>
+        {options.customActionButtons && showCustomActionButtons ? options.customActionButtons : null}
+      </div>
+      )]
     )
 
     return (
       <div className='card'>
         <div className='card-block'>
           <h4 className='card-title'>{title}</h4>
-          { buttonsOnTop ? actionButtons : null }
+          { buttonsOnTop ? actionButtons() : null }
         </div>
 
         <div className='card-block'>
@@ -131,7 +136,7 @@ const GlobalErrors = observer(({errors}) => {
         </div>
 
         <div className='card-block'>
-          { actionButtons }
+          { actionButtons(false) }
         </div>
       </div>
     )

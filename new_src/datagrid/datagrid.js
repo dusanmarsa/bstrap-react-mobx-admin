@@ -13,8 +13,9 @@ const BStrapHeader = ({children, sort, name, onSort}) => {
     onSort(name, sort === 'DESC' ? null : 'DESC')
   }
   return (
-    <div>
-      {onSort && (
+    <div className='header'>
+      <div className='capt'>{children}</div>
+      {onSort ? (
         <div className='sort-buttons-box'>
           <Button bsSize='xsmall' bsStyle={sort === 'ASC' ? 'primary' : 'default'} onClick={_onUpClick}>
             <span className='glyphicon glyphicon-chevron-up' />
@@ -23,8 +24,7 @@ const BStrapHeader = ({children, sort, name, onSort}) => {
             <span className='glyphicon glyphicon-chevron-down' />
           </Button>
         </div>
-      )}
-      <div>{children}</div>
+      ) : (<div className='sort-buttons-box'/>)}
     </div>
   )
 }
@@ -41,7 +41,7 @@ BStrapHeader.propTypes = {
 const BStrapDatagrid = ({
   state, attrs, fieldCreator, headerCreator, rowId, isSelected, noSort,
   onRowSelection, onSort, sortstate, listActions, listActionLeft, allSelected,
-  filters, TDComponent, TRComponent, TBodyComponent, options = {}
+  filters, TDComponent, TRComponent, TBodyComponent, refFn, options = {}
 }) => {
   const _renderTD = ({...rest}) => TDComponent ? (
     <TDComponent {...rest} /> // custom
@@ -88,7 +88,9 @@ const BStrapDatagrid = ({
     selectable && cells.push(_renderTD({
       key: 'chbox',
       children: (
-        <Checkbox checked={selected} inline onChange={() => onRowSelection(rowIdx)} />
+        <div ref={(node) => refFn && refFn(node, row)}>
+          <Checkbox checked={selected} inline onChange={() => onRowSelection(rowIdx)} />
+        </div>
       )
     }))
     listActionLeft && cells.push(_renderTD({key: 'lst-acts-l', children: listActionLeft(row)}))
@@ -96,7 +98,7 @@ const BStrapDatagrid = ({
     listActions && cells.push(_renderTD({key: 'lst-acts', children: listActions(row)}))
 
     return TRComponent ? (
-      <TRComponent selected={selected} key={rowIdx}>{cells}</TRComponent>
+      <TRComponent selected={selected} key={rowIdx} row={row}>{cells}</TRComponent>
     ) : (
       <tr selected={selected} key={rowIdx}>{cells}</tr>
     )

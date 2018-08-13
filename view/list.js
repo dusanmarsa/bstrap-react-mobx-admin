@@ -16,7 +16,7 @@ const BStrapListView = ({
   const nbPages = parseInt(store.totalItems)
   filters = filters && filters.call ? filters() : filters
   const perPageTitle = store.router.queryParams._perPage || ''
-  perPageOptions = perPageOptions || [5, 10, 15, 20, 50, 100]
+  perPageOptions = perPageOptions || store.perPageOptions || [5, 10, 15, 20, 50, 100]
   
   let shiftDown = observable.box(false)
 

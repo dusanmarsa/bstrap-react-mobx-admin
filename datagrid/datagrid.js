@@ -43,7 +43,7 @@ BStrapHeader.propTypes = {
 const BStrapDatagrid = ({
   state, attrs, fields, titles, rowId, isSelected, noSort,
   onRowSelection, onSort, sortstate, listActions, listActionDelete, allSelected,
-  filters, dragbleListEntity
+  filters, dragbleListEntity, customRowStyleClass, dragbleHelperClass
 }) => {
   //
   function _renderHeader (name, label, sort, onSort) {
@@ -89,15 +89,16 @@ const BStrapDatagrid = ({
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
-  const SortableItem = SortableElement(({children}) => <tr>{children}</tr> )
+  const SortableItem = SortableElement(({row, children}) => <tr className={ customRowStyleClass ? customRowStyleClass(row) : 'noClass' } >{children}</tr> )
   const SortableWrapper = SortableContainer(({ items, buildCells  }) => {
     return (<tbody>
       {
         items.map((r, index) => (
-          <SortableItem 
-            key={index}  
-            index={dragbleListEntity.editIndex ? dragbleListEntity.editIndex(index) : index} 
-            disabled={dragbleListEntity.disableFn(r)} > 
+          <SortableItem
+            key={index}
+            row={r}
+            index={dragbleListEntity.editIndex ? dragbleListEntity.editIndex(index) : index}
+            disabled={dragbleListEntity.disableFn(r)} >
               { buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete) }
           </SortableItem>
         ))
@@ -106,14 +107,14 @@ const BStrapDatagrid = ({
     )
   })
 
-  let tableChildren = state.loading 
+  let tableChildren = state.loading
     ? <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
     : state.items.length === 0
       ? tableChildren = <tr><td>EMPTY</td></tr>
       : state.items.map((r, i) => {
           const selected = selectable && isSelected(i)
           return (
-            <tr selected={selected} key={i}>
+            <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
               {
                 selectable ? (
                   <td key='chbox'>
@@ -160,12 +161,13 @@ const BStrapDatagrid = ({
         </thead>
       ) : null}
       {
-        dragbleListEntity 
-          ? <SortableWrapper 
-              items={state.items} 
-              buildCells={buildCells} 
+        dragbleListEntity
+          ? <SortableWrapper
+              helperClass={dragbleHelperClass}
+              items={state.items}
+              buildCells={buildCells}
               onSortEnd={dragbleListEntity.onDragEnd}
-              pressDelay={dragbleListEntity.dragToggleDelay} /> 
+              pressDelay={dragbleListEntity.dragToggleDelay} />
           : <tbody>{tableChildren}</tbody>
       }
     </table>
