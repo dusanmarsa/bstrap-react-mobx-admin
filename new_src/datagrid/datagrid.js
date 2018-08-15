@@ -114,6 +114,16 @@ const BStrapDatagrid = ({
                 <th key='chbox'>
                   <Checkbox checked={allSelected} inline bsClass='btn'
                     onChange={_onSelectAll} />
+                    <Button bsStyle={'default'} bsSize={'small'} onClick={() => {
+                      sortstate._sortField &&
+                      sortstate._sortField.split(',') && 
+                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+                  
+                      sortstate._sortField = ''
+                      sortstate._sortDir = ''
+                    }}>
+                      <span className={'glyphicon glyphicon-refresh'}></span>
+                    </Button>
                 </th>
               ) : null
             }
