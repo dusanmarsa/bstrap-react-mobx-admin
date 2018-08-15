@@ -91,7 +91,7 @@ const BStrapDatagrid = ({
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
   const SortableItem = SortableElement(({row, children}) => <tr className={ customRowStyleClass ? customRowStyleClass(row) : 'noClass' } >{children}</tr> )
-  const SortableWrapper = SortableContainer(({ items, buildCells  }) => {
+  const SortableWrapper = SortableContainer(({items, buildCells}) => {
     return (<tbody>
       {
         items.map((r, index) => (
@@ -99,12 +99,12 @@ const BStrapDatagrid = ({
             key={index}
             row={r}
             index={dragbleListEntity.editIndex ? dragbleListEntity.editIndex(index) : index}
-            disabled={dragbleListEntity.disableFn(r)} >
-              { buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete) }
+            disabled={dragbleListEntity.disableFn(r)}>
+            {buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)}
           </SortableItem>
         ))
       }
-      </tbody>
+    </tbody>
     )
   })
 
@@ -113,31 +113,40 @@ const BStrapDatagrid = ({
     : state.items.length === 0
       ? tableChildren = <tr><td>EMPTY</td></tr>
       : state.items.map((r, i) => {
-          const selected = selectable && isSelected(i)
-          return (
-            <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
-              {
-                selectable ? (
-                  <td key='chbox'>
-                    <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
-                  </td>
-                ) : null
-              }
-              {
-                buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
-              }
-            </tr>
-          )
-        })
+        const selected = selectable && isSelected(i)
+        return (
+          <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
+            {
+              selectable ? (
+                <td key='chbox'>
+                  <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
+                </td>
+              ) : null
+            }
+            {
+              buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
+            }
+          </tr>
+        )
+      })
 
   return (
     <table className='table table-sm'>
       {titles ? (
         <thead>
           <tr>
-            { selectable ? <th key='chbox'>
-              <Checkbox checked={allSelected} inline bsClass='btn'
-                onChange={_onSelectAll} />
+            { selectable ? <th>
+              <div className='sort-buttons-box'>
+                <Button bsStyle='default' bsSize='xsmall' onClick={() => {
+                  sortstate._sortField &&
+                  sortstate._sortField.split(',') && 
+                  sortstate._sortField.split(',').forEach(f => onSort(f, null))
+                  sortstate._sortField = ''
+                  sortstate._sortDir = ''
+                }}>
+                  <span className='glyphicon glyphicon-refresh' />
+                </Button>
+              </div>
             </th> : null }
             {
               buildHeaders(attrs, titles, _renderHeader, listActionsRender,
@@ -148,17 +157,9 @@ const BStrapDatagrid = ({
             filters ? (
               <tr className='filter-row'>
                 {
-                  selectable ? <th>
-                    <Button bsStyle={'default'} style={{ height: '38px' }} onClick={() => {
-                      sortstate._sortField &&
-                      sortstate._sortField.split(',') && 
-                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
-                  
-                      sortstate._sortField = ''
-                      sortstate._sortDir = ''
-                    }}>
-                      <span className={'glyphicon glyphicon-refresh'}></span>
-                    </Button></th> : null
+                  selectable ? <th key='chbox'>
+                    <Checkbox checked={allSelected} inline bsClass='btn' onChange={_onSelectAll} />
+                  </th> : null
                 }
                 {
                   filters.map((i, idx) => <th key={idx}>{i}</th>)
@@ -174,11 +175,11 @@ const BStrapDatagrid = ({
       {
         dragbleListEntity
           ? <SortableWrapper
-              helperClass={dragbleHelperClass}
-              items={state.items}
-              buildCells={buildCells}
-              onSortEnd={dragbleListEntity.onDragEnd}
-              pressDelay={dragbleListEntity.dragToggleDelay} />
+            helperClass={dragbleHelperClass}
+            items={state.items}
+            buildCells={buildCells}
+            onSortEnd={dragbleListEntity.onDragEnd}
+            pressDelay={dragbleListEntity.dragToggleDelay} />
           : <tbody>{tableChildren}</tbody>
       }
     </table>
