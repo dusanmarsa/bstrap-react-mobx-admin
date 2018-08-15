@@ -4,6 +4,7 @@ import Datagrid from '../datagrid/datagrid'
 import Filters from '../datagrid/filters'
 import Pagination from '../datagrid/pagination'
 import { observer } from 'mobx-react'
+import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const DatagridActions = observer(({actions, state}) => {
@@ -19,16 +20,44 @@ const BStrapListView = ({
   headerCreator = headerCreator || store.headerCreator.bind(store)
   const perPageTitle = store.router.queryParams._perPage || ''
 
-  const onSelectionChange = batchActions ? (selection) => {
-    if (selection === 'all') {
-      store.selectAll()
-    } else if (selection.length === 0) {
-      store.updateSelection([])
-    } else { // we have receive index of selected item
-      // so toggle the selection of da index
-      store.toggleIndex(selection)
+  let shiftDown = observable.box(false)
+
+  window.addEventListener('keydown', e => {
+    if(e.keyCode === 16) {
+      shiftDown.set(true)
     }
-  } : undefined
+  })
+
+  function onSelectionChange (selection) {
+    if(shiftDown.get() && store.selection && store.selection.length > 0) {
+      if(store.selection.length > 0) {
+        let first = store.selection[0]
+        let newSelection = []
+
+        if(selection < first) {
+          for (let i = selection; i <= first; i++) {
+            newSelection.push(i)
+          }
+        } else if(selection == first) {
+          store.toggleIndex(selection)
+        } else {
+          for (let i = first; i <= selection; i++) {
+            newSelection.push(i)
+          }
+        }
+        store.updateSelection(newSelection)
+        return
+      }
+    }
+      if (selection === 'all') {
+        store.selectAll()
+      } else if (selection.length === 0) {
+        store.updateSelection([])
+      } else { // we have receive index of selected item
+        // so toggle the selection of da index
+        store.toggleIndex(selection)
+      }
+  }
 
   function isSelected (idx) {
     return store.selection.indexOf(idx) >= 0

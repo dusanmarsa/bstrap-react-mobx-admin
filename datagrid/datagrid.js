@@ -7,7 +7,8 @@ import {
 } from 'react-mobx-admin/components/common/datagrid/table'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 
-const BStrapHeader = ({label, sort, name, onSort}) => {
+const BStrapHeader = ({label, sort, name, onSort, sortstate}) => {
+
   //
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
@@ -49,7 +50,7 @@ const BStrapDatagrid = ({
   function _renderHeader (name, label, sort, onSort) {
     return (
       <th key={`th_${name}`}>
-        <BStrapHeader
+        <BStrapHeader sortstate={sortstate}
           sort={sort} name={name} label={label}
           onSort={noSort && noSort.some(n => n === name) ? null : onSort} />
       </th>
@@ -147,7 +148,17 @@ const BStrapDatagrid = ({
             filters ? (
               <tr className='filter-row'>
                 {
-                  selectable ? <th key='0' /> : null
+                  selectable ? <th>
+                    <Button bsStyle={'default'} style={{ height: '38px' }} onClick={() => {
+                      sortstate._sortField &&
+                      sortstate._sortField.split(',') && 
+                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+                  
+                      sortstate._sortField = ''
+                      sortstate._sortDir = ''
+                    }}>
+                      <span className={'glyphicon glyphicon-refresh'}></span>
+                    </Button></th> : null
                 }
                 {
                   filters.map((i, idx) => <th key={idx}>{i}</th>)
