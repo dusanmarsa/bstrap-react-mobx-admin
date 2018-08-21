@@ -7,13 +7,19 @@ import {
 } from 'react-mobx-admin/components/common/datagrid/table'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 
-const BStrapHeader = ({label, sort, name, onSort}) => {
+const BStrapHeader = ({state, label, sort, name, onSort}) => {
   //
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
+    
+    state && state.store && state.store.setEntityLastState &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
   function _onDownClick (e) {
     onSort(name, sort === 'DESC' ? null : 'DESC')
+    
+    state && state.store && state.store.setEntityLastState &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
 
   return (
@@ -50,7 +56,7 @@ const BStrapDatagrid = ({
     return (
       <th key={`th_${name}`}>
         <BStrapHeader
-          sort={sort} name={name} label={label}
+          sort={sort} name={name} label={label} state={state}
           onSort={noSort && noSort.some(n => n === name) ? null : onSort} />
       </th>
     )
