@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { Checkbox, Button } from 'react-bootstrap'
+import { Checkbox, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import {buildTableHeaders} from 'react-mobx-admin/new_src/component_utils'
 
 const BStrapHeader = ({children, sort, name, onSort}) => {
@@ -120,6 +120,24 @@ const BStrapDatagrid = ({
                 <th key='chbox'>
                   <Checkbox checked={allSelected} inline bsClass='btn'
                     onChange={_onSelectAll} />
+                  <OverlayTrigger 
+                      placement="right" 
+                      overlay={<Tooltip>{
+                          !sortstate._sortField
+                            ? 'Resetuje filtry a řazení entity do defaultního stavu'
+                            : 'Resetuje filtry a řazení entity do čistého stavu'
+                      }</Tooltip>
+                  }>
+                    <Button bsStyle={'default'} bsSize={'small'} onClick={() => {
+                      sortstate._sortField &&
+                      sortstate._sortField.split(',') && 
+                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+                  
+                      sortstate._sortField = ''
+                      sortstate._sortDir = ''
+                    }}>
+                      <span className={'glyphicon glyphicon-ban-circle'}></span>
+                    </Button></OverlayTrigger>
                 </th>
               ) : null
             }
