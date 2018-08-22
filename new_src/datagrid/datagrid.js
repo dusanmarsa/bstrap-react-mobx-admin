@@ -8,9 +8,15 @@ const BStrapHeader = ({children, sort, name, onSort}) => {
   //
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
+    
+    state && state.store && state.store.setEntityLastState &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
   function _onDownClick (e) {
     onSort(name, sort === 'DESC' ? null : 'DESC')
+    
+    state && state.store && state.store.setEntityLastState &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
   return (
     <div className='header'>
