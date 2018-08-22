@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { Checkbox, Button } from 'react-bootstrap'
+import { Checkbox, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import {
   buildHeaders, buildCells
 } from 'react-mobx-admin/components/common/datagrid/table'
@@ -149,6 +149,14 @@ const BStrapDatagrid = ({
               <tr className='filter-row'>
                 {
                   selectable ? <th>
+                    <OverlayTrigger 
+                      placement="right" 
+                      overlay={<Tooltip>{
+                          !sortstate._sortField
+                            ? 'Resetuje tabulku do defaultního stavu'
+                            : 'Resetuje tabulku do čistého stavu'
+                      }</Tooltip>
+                    }>
                     <Button bsStyle={'default'} style={{ height: '38px' }} onClick={() => {
                       sortstate._sortField &&
                       sortstate._sortField.split(',') && 
@@ -157,8 +165,8 @@ const BStrapDatagrid = ({
                       sortstate._sortField = ''
                       sortstate._sortDir = ''
                     }}>
-                      <span className={'glyphicon glyphicon-refresh'}></span>
-                    </Button></th> : null
+                      <span className={'glyphicon glyphicon-ban-circle'}></span>
+                    </Button></OverlayTrigger></th> : null
                 }
                 {
                   filters.map((i, idx) => <th key={idx}>{i}</th>)
