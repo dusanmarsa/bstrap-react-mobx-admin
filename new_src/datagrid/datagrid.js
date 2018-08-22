@@ -75,6 +75,31 @@ const BStrapDatagrid = ({
     e.target.checked ? onRowSelection('all') : onRowSelection([])
   }
 
+  function handleResetButton() {
+
+    if(!sortstate._sortField){
+      if(state.defaultSort && state.defaultSort._sortField && state.defaultSort._sortField.split(',')) {
+        state.defaultSort._sortField.split(',').forEach((f, idx) => {
+          onSort(f, state.defaultSort._sortDir.split(',')[idx])
+        })
+        sortstate._sortField = state.defaultSort._sortField
+        sortstate._sortDir = state.defaultSort._sortDir
+      }
+    } else {
+      sortstate._sortField &&
+      sortstate._sortField.split(',') && 
+      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+  
+      sortstate._sortField = ''
+      sortstate._sortDir = ''
+
+      delete state.store.entityLastState[state.store.cv.entityname]
+    }
+
+    state && state.store &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
+  }
+
   const selectable = onRowSelection !== undefined && isSelected !== undefined
 
   let tableChildren = state.loading ? (
@@ -128,14 +153,7 @@ const BStrapDatagrid = ({
                             : 'Resetuje filtry a řazení entity do čistého stavu'
                       }</Tooltip>
                   }>
-                    <Button bsStyle={'default'} bsSize={'small'} onClick={() => {
-                      sortstate._sortField &&
-                      sortstate._sortField.split(',') && 
-                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
-                  
-                      sortstate._sortField = ''
-                      sortstate._sortDir = ''
-                    }}>
+                    <Button bsStyle={'default'} bsSize={'small'} onClick={handleResetButton}>
                       <span className={'glyphicon glyphicon-ban-circle'}></span>
                     </Button></OverlayTrigger>
                 </th>
