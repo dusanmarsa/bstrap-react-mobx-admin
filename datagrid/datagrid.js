@@ -108,7 +108,7 @@ const BStrapDatagrid = ({
     )
   })
 
-  let tableChildren = state.loading
+  let tableChildren = state.state === 'loading'
     ? <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
     : state.items.length === 0
       ? tableChildren = <tr><td>EMPTY</td></tr>

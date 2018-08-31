@@ -71,7 +71,7 @@ const BStrapDatagrid = ({
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
 
-  let tableChildren = state.loading ? (
+  let tableChildren = state.state === 'loading' ? (
     <tr><td>{
       options.loadingComponent ? options.loadingComponent() : (
         <div>
