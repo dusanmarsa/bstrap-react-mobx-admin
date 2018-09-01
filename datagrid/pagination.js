@@ -18,7 +18,7 @@ class Pagination extends PaginationBase {
     const pageRange = this.range(page, perPage, totalItems).map(pageNum =>
       (pageNum === '.') ? '' :
         <li key={pageNum} className={"page-item " + (page === pageNum ? "active" : "")}>
-          <a className="page-link" href="javascript:void(0)" onClick={this.onChange(pageNum)}>{pageNum}</a>
+          <a className="page-link" href="javascript:void(0)" onClick={this.onChange(store, pageNum)}>{pageNum}</a>
         </li>
     )
 
@@ -26,7 +26,7 @@ class Pagination extends PaginationBase {
       <ul className="pagination">
       {page > 1 &&
         <li key="prev" className="page-item">
-          <a className="page-link" href="javascript:void(0)" aria-label="Previous" onClick={this.onChange(page - 1)}>
+          <a className="page-link" href="javascript:void(0)" aria-label="Previous" onClick={this.onChange(store, page - 1)}>
             <span aria-hidden="true">&laquo;</span>
             <span className="sr-only">Previous</span>
           </a>
@@ -35,7 +35,7 @@ class Pagination extends PaginationBase {
       {pageRange}
       {page !== nbPages &&
         <li key="next" className="page-item">
-          <a className="page-link" href="javascript:void(0)" aria-label="Previous" onClick={this.onChange(page + 1)}>
+          <a className="page-link" href="javascript:void(0)" aria-label="Previous" onClick={this.onChange(store, page + 1)}>
             <span aria-hidden="true">&raquo;</span>
             <span className="sr-only">Previous</span>
           </a>
