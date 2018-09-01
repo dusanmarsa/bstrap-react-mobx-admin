@@ -71,7 +71,7 @@ const BStrapDatagrid = ({
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
 
-  let tableChildren = state.loading ? (
+  let tableChildren = state.state === 'loading' ? (
     <tr><td>{
       options.loadingComponent ? options.loadingComponent() : (
         <div>
@@ -112,8 +112,19 @@ const BStrapDatagrid = ({
             {
               selectable ? (
                 <th key='chbox'>
-                  <Checkbox checked={allSelected} inline bsClass='btn'
-                    onChange={_onSelectAll} />
+                  <div className='sort-buttons-box'>
+                    <Checkbox checked={allSelected} inline bsClass='btn' onChange={_onSelectAll} />
+                    {' '}
+                    <Button bsStyle='default' bsSize='xsmall' onClick={() => {
+                      sortstate._sortField &&
+                      sortstate._sortField.split(',') && 
+                      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+                      sortstate._sortField = ''
+                      sortstate._sortDir = ''
+                    }}>
+                      <span className='glyphicon glyphicon-refresh' />
+                    </Button>
+                  </div>
                 </th>
               ) : null
             }
