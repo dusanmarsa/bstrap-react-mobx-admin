@@ -1,20 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { Checkbox, Button } from 'react-bootstrap'
+import { Checkbox, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import {
   buildHeaders, buildCells
 } from 'react-mobx-admin/components/common/datagrid/table'
 import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
 
-const BStrapHeader = ({label, sort, name, onSort, sortstate}) => {
+const BStrapHeader = ({state, label, sort, name, onSort}) => {
 
   //
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
+
+    state && state.store &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
   function _onDownClick (e) {
     onSort(name, sort === 'DESC' ? null : 'DESC')
+
+    state && state.store &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
 
   return (
@@ -50,8 +56,8 @@ const BStrapDatagrid = ({
   function _renderHeader (name, label, sort, onSort) {
     return (
       <th key={`th_${name}`}>
-        <BStrapHeader sortstate={sortstate}
-          sort={sort} name={name} label={label}
+        <BStrapHeader
+          sort={sort} name={name} label={label} state={state}
           onSort={noSort && noSort.some(n => n === name) ? null : onSort} />
       </th>
     )
@@ -87,6 +93,30 @@ const BStrapDatagrid = ({
 
   function _onSelectAll (e) {
     e.target.checked ? onRowSelection('all') : onRowSelection([])
+  }
+
+  function handleResetButton() {
+    if(!sortstate._sortField){
+      if(state.defaultSort && state.defaultSort._sortField && state.defaultSort._sortField.split(',')) {
+        state.defaultSort._sortField.split(',').forEach((f, idx) => {
+          onSort(f, state.defaultSort._sortDir.split(',')[idx])
+        })
+        sortstate._sortField = state.defaultSort._sortField
+        sortstate._sortDir = state.defaultSort._sortDir
+      }
+    } else {
+      sortstate._sortField &&
+      sortstate._sortField.split(',') && 
+      sortstate._sortField.split(',').forEach(f => onSort(f, null))
+  
+      sortstate._sortField = ''
+      sortstate._sortDir = ''
+
+      delete state.store.entityLastState[state.store.cv.entityname]
+    }
+
+    state && state.store &&
+    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
@@ -137,15 +167,18 @@ const BStrapDatagrid = ({
           <tr>
             { selectable ? <th>
               <div className='sort-buttons-box'>
-                <Button bsStyle='default' bsSize='xsmall' onClick={() => {
-                  sortstate._sortField &&
-                  sortstate._sortField.split(',') && 
-                  sortstate._sortField.split(',').forEach(f => onSort(f, null))
-                  sortstate._sortField = ''
-                  sortstate._sortDir = ''
-                }}>
-                  <span className='glyphicon glyphicon-refresh' />
-                </Button>
+                <OverlayTrigger 
+                        placement="right" 
+                        overlay={<Tooltip>{
+                            !sortstate._sortField
+                              ? 'Resetuje filtry a řazení entity do defaultního stavu'
+                              : 'Resetuje filtry a řazení entity do čistého stavu'
+                        }</Tooltip>
+                    }>
+                    <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
+                      <span className={'glyphicon glyphicon-ban-circle'}></span>
+                    </Button>
+                  </OverlayTrigger>
               </div>
             </th> : null }
             {
