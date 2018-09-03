@@ -76,9 +76,8 @@ const BStrapDatagrid = ({
   }
 
   function handleResetButton() {
-
-    if(!sortstate._sortField){
-      if(state.defaultSort && state.defaultSort._sortField && state.defaultSort._sortField.split(',')) {
+    if (!sortstate._sortField){
+      if (state.defaultSort && state.defaultSort._sortField && state.defaultSort._sortField.split(',')) {
         state.defaultSort._sortField.split(',').forEach((f, idx) => {
           onSort(f, state.defaultSort._sortDir.split(',')[idx])
         })
@@ -87,17 +86,16 @@ const BStrapDatagrid = ({
       }
     } else {
       sortstate._sortField &&
-      sortstate._sortField.split(',') && 
-      sortstate._sortField.split(',').forEach(f => onSort(f, null))
-  
+        sortstate._sortField.split(',') &&
+        sortstate._sortField.split(',').forEach(f => onSort(f, null))
+
       sortstate._sortField = ''
       sortstate._sortDir = ''
-
       delete state.store.entityLastState[state.store.cv.entityname]
     }
 
-    state && state.store &&
-    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
+    state && state.store &&
+      state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
@@ -146,18 +144,17 @@ const BStrapDatagrid = ({
                   <div className='sort-buttons-box'>
                     <Checkbox checked={allSelected} inline bsClass='btn' onChange={_onSelectAll} />
                     {' '}
-                    <OverlayTrigger 
-                      placement="right" 
+                    <OverlayTrigger
+                      placement='right'
                       overlay={<Tooltip>{
-                          !sortstate._sortField
-                            ? 'Resetuje filtry a řazení entity do defaultního stavu'
-                            : 'Resetuje filtry a řazení entity do čistého stavu'
-                      }</Tooltip>
-                    }>
+                        !sortstate._sortField
+                          ? 'Sets filters and sorting to the default state'
+                          : 'Reset filters and sorting to the clean state'
+                      }</Tooltip>}>
                       <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
-                      <span className={'glyphicon glyphicon-ban-circle'}></span>
-                    </Button>
-                  </OverlayTrigger>
+                        <span className={'glyphicon glyphicon-ban-circle'} />
+                      </Button>
+                    </OverlayTrigger>
                   </div>
                 </th>
               ) : null
