@@ -17,12 +17,14 @@ const BStrapListView = ({
   filters = filters && filters.call ? filters() : filters
   const perPageTitle = store.router.queryParams._perPage || ''
   perPageOptions = perPageOptions || store.perPageOptions || [5, 10, 15, 20, 50, 100]
-  
+
   let shiftDown = observable.box(false)
 
   window.addEventListener('keydown', e => {
-    if(e.keyCode === 16) {
+    if (e.keyCode === 16) {
       shiftDown.set(true)
+      e.preventDefault()
+      e.stopPropagation()
     }
   })
 
@@ -44,6 +46,7 @@ const BStrapListView = ({
           }
         }
         store.updateSelection(newSelection)
+        shiftDown.set(false)
         return
       }
     }
