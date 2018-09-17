@@ -10,7 +10,7 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, fields, filters, listActions, batchActions, renderOuter, perPageOptions
+  store, onAddClicked, fields, filters, listActions, batchActions, stableBatchActions, renderOuter, perPageOptions
 }) => {
   //
   const nbPages = parseInt(store.totalItems)
@@ -102,6 +102,7 @@ const BStrapListView = ({
         <div className='pull-right'>
           <ButtonGroup>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
+            {stableBatchActions && stableBatchActions()}
             {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
             {filters && (
               <Filters.Dropdown state={store} title='addfilter' filters={filters}
@@ -138,6 +139,7 @@ BStrapListView.propTypes = {
   filters: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   listActions: PropTypes.func,
   batchActions: PropTypes.func,
+  stableBatchActions: PropTypes.func,
   perPageOptions: PropTypes.arrayOf(PropTypes.number)
 }
 export default observer(BStrapListView)
