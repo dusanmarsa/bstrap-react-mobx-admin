@@ -10,7 +10,7 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, fields, filters, listActions, batchActions, stableBatchActions, renderOuter, perPageOptions
+  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, stableBatchActions, renderOuter, perPageOptions
 }) => {
   //
   const nbPages = parseInt(store.totalItems)
@@ -109,6 +109,7 @@ const BStrapListView = ({
                 showFilter={store.showFilter.bind(store)} />
             )}
             {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
+            {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
           </ButtonGroup>
         </div>
         {store.title ? <h4 className='card-title'>{store.title}</h4> : null}
@@ -135,6 +136,7 @@ BStrapListView.propTypes = {
   store: PropTypes.instanceOf(ListStore).isRequired,
   renderOuter: PropTypes.func,
   onAddClicked: PropTypes.func,
+  onAddClickedFL: PropTypes.func,
   fields: PropTypes.arrayOf(PropTypes.func).isRequired,
   filters: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   listActions: PropTypes.func,
