@@ -95,8 +95,21 @@ const BStrapDatagrid = ({
     e.target.checked ? onRowSelection('all') : onRowSelection([])
   }
 
-  function handleResetButton() {
-    if (!sortstate._sortField){
+  function handleResetButton () {
+    if (state.filters && state.filters.size > 0) {
+      state.filters.forEach((val, key) => {
+        state.filters.delete(key)
+      })
+      const newQPars = Object.assign({}, state._convertFilters(state.filters), {
+        '_page': state.router.queryParams['_page'],
+        '_perPage': state.router.queryParams['_perPage'],
+        '_sortField': state.router.queryParams['_sortField'],
+        '_sortDir': state.router.queryParams['_sortDir']
+      })
+      state.updateQPars(newQPars)
+    }
+
+    if (!sortstate._sortField) {
       if (state.defaultSort && state.defaultSort._sortField && state.defaultSort._sortField.split(',')) {
         state.defaultSort._sortField.split(',').forEach((f, idx) => {
           onSort(f, state.defaultSort._sortDir.split(',')[idx])
