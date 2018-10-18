@@ -2,13 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { Checkbox, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import {
-  buildHeaders, buildCells
-} from 'react-mobx-admin/components/common/datagrid/table'
-import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
+import {buildTableHeaders} from 'react-mobx-admin/new_src/component_utils'
 
-const BStrapHeader = ({state, label, sort, name, onSort}) => {
-
+const BStrapHeader = ({state, children, sort, name, onSort}) => {
   //
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
@@ -22,11 +18,10 @@ const BStrapHeader = ({state, label, sort, name, onSort}) => {
     state && state.store &&
     state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
-
   return (
-    <div>
-      <div>{label}&nbsp;</div>
-      {onSort && (
+    <div className='header'>
+      <div className='capt'>{children}</div>
+      {onSort ? (
         <div className='sort-buttons-box'>
           <Button bsSize='xsmall' bsStyle={sort === 'ASC' ? 'primary' : 'default'} onClick={_onUpClick}>
             <span className='glyphicon glyphicon-chevron-up' />
@@ -35,60 +30,45 @@ const BStrapHeader = ({state, label, sort, name, onSort}) => {
             <span className='glyphicon glyphicon-chevron-down' />
           </Button>
         </div>
-      )}
+      ) : (<div className='sort-buttons-box'/>)}
     </div>
   )
 }
-
 BStrapHeader.propTypes = {
-  label: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.element
+  ]).isRequired,
   sort: PropTypes.string,
   name: PropTypes.string,
   onSort: PropTypes.func
 }
 
 const BStrapDatagrid = ({
-  state, attrs, fields, titles, rowId, isSelected, noSort,
-  onRowSelection, onSort, sortstate, listActions, listActionDelete, allSelected,
-  filters, dragbleListEntity, customRowStyleClass, dragbleHelperClass
+  state, attrs, fieldCreator, headerCreator, rowId, isSelected, noSort,
+  onRowSelection, onSort, sortstate, listActions, listActionLeft, allSelected,
+  filters, TDComponent, TRComponent, TBodyComponent, refFn, options = {}
 }) => {
-  //
+  const _renderTD = ({...rest}) => TDComponent ? (
+    <TDComponent {...rest} /> // custom
+  ) : (
+    <td {...rest} />  // or default
+  )
   function _renderHeader (name, label, sort, onSort) {
     return (
       <th key={`th_${name}`}>
         <BStrapHeader
-          sort={sort} name={name} label={label} state={state}
-          onSort={noSort && noSort.some(n => n === name) ? null : onSort} />
+          sort={sort} name={name} state={state}
+          onSort={noSort && noSort.some(n => n === name) ? null : onSort}>
+          {headerCreator(name)}
+        </BStrapHeader>
       </th>
     )
   }
 
-  const listActionsRender = listActions ? (
-    <th key={'_actions'}>{listActions()}</th>
-  ) : null
-
-  const listActionDeleteRender = listActionDelete ? (
-    <th key={'_actions-delete'}>{listActionDelete()}</th>
-  ) : null
-
-  function _renderCell (row, name, creatorFn, rowId) {
-    return (
-      <td key={`td_${rowId}_${name}`}>
-        {creatorFn(name, row)}
-      </td>
-    )
-  }
-
-  function _renderRowActions (row) {
-    return listActions ? (
-      <td key={'datagrid-actions'}>{listActions(row)}</td>
-    ) : null
-  }
-
-  function _renderRowActionDelete (row) {
-    return listActionDelete ? (
-      <td key={'datagrid-actions-delete'}>{listActionDelete(row)}</td>
-    ) : null
+  function _renderCell (attr, row, rowId) {
+    const content = fieldCreator(attr, row)
+    return _renderTD({key: `td_${rowId}_${attr}`, children: content})
   }
 
   function _onSelectAll (e) {
@@ -132,85 +112,92 @@ const BStrapDatagrid = ({
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
-  const SortableItem = SortableElement(({row, children}) =>
-    <tr className={ customRowStyleClass ? customRowStyleClass(row) : 'noClass' } >{children}</tr> )
-  const SortableWrapper = SortableContainer(({items, buildCells}) => {
-    return (<tbody>
-      {
-        items.map((r, index) => (
-          <SortableItem
-            key={index}
-            row={r}
-            index={dragbleListEntity.editIndex ? dragbleListEntity.editIndex(index) : index}
-            disabled={dragbleListEntity.disableFn(r)}>
-            {buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)}
-          </SortableItem>
-        ))
-      }
-    </tbody>
+
+  let tableChildren = state.state === 'loading' ? (
+    <tr><td>{
+      options.loadingComponent ? options.loadingComponent() : (
+        <div>
+          <span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' />
+          &nbsp;Loading...
+        </div>
+      )
+    }</td></tr>
+  ) : state.items.length === 0 ? (
+    <tr><td>{options.emptyComponent ? options.emptyComponent() : null}</td></tr>
+  ) : state.items.map((row, rowIdx) => {
+    const selected = selectable && isSelected(rowIdx)
+    let cells = []
+    selectable && cells.push(_renderTD({
+      key: 'chbox',
+      children: (
+        <div ref={(node) => refFn && refFn(node, row)}>
+          <Checkbox checked={selected} inline onChange={() => onRowSelection(rowIdx)} />
+        </div>
+      )
+    }))
+    listActionLeft && cells.push(_renderTD({key: 'lst-acts-l', children: listActionLeft(row)}))
+    cells = cells.concat(attrs.map((attr, idx) => _renderCell(attr, row, idx)))
+    listActions && cells.push(_renderTD({key: 'lst-acts', children: listActions(row)}))
+
+    return TRComponent ? (
+      <TRComponent selected={selected} key={rowIdx} row={row}>{cells}</TRComponent>
+    ) : (
+      <tr selected={selected} key={rowIdx}>{cells}</tr>
     )
   })
 
-  let tableChildren = state.state === 'loading'
-    ? <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
-    : state.items.length === 0
-      ? tableChildren = <tr><td>EMPTY</td></tr>
-      : state.items.map((r, i) => {
-        const selected = selectable && isSelected(i)
-        return (
-          <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
+  return (
+    <table className='table table-sm'>
+      {headerCreator ? (
+        <thead>
+          <tr>
             {
               selectable ? (
-                <td key='chbox'>
-                  <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
-                </td>
+                <th key='chbox'>
+                  <div className='sort-buttons-box'>
+                    <Checkbox checked={allSelected} inline bsClass='btn' onChange={_onSelectAll} />
+                    {' '}
+                    <OverlayTrigger
+                      placement='right'
+                      overlay={<Tooltip>{
+                        !sortstate._sortField
+                          ? 'Sets filters and sorting to the default state'
+                          : 'Reset filters and sorting to the clean state'
+                      }</Tooltip>}>
+                      <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
+                        <span className={'glyphicon glyphicon-ban-circle'} />
+                      </Button>
+                    </OverlayTrigger>
+                  </div>
+                </th>
               ) : null
             }
             {
-              buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
+              listActionLeft ? (
+                <th key={'_actions-left'}>{ listActionLeft() }</th>
+              ) : null
             }
-          </tr>
-        )
-      })
-
-  return (
-    <table className='table table-sm'>
-      {titles ? (
-        <thead>
-          <tr>
-            { selectable ? <th>
-              <div className='sort-buttons-box'>
-                <OverlayTrigger
-                  placement='right'
-                  overlay={<Tooltip>{
-                    !sortstate._sortField
-                      ? 'Sets filters and sorting to the default state'
-                      : 'Reset filters and sorting to the clean state'
-                  }</Tooltip>}>
-                  <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
-                    <span className={'glyphicon glyphicon-ban-circle'} />
-                  </Button>
-                </OverlayTrigger>
-              </div>
-            </th> : null }
             {
-              buildHeaders(attrs, titles, _renderHeader, listActionsRender,
-                onSort, sortstate, noSort, listActionDeleteRender)
+              buildTableHeaders(attrs, headerCreator, _renderHeader, onSort, sortstate, noSort)
+            }
+            {
+              listActions ? (<th key={'_actions'}>{ listActions() }</th>) : null
             }
           </tr>
           {
             filters ? (
               <tr className='filter-row'>
                 {
-                  selectable ? <th key='chbox'>
-                    <Checkbox checked={allSelected} inline bsClass='btn' onChange={_onSelectAll} />
-                  </th> : null
+                  selectable ? <th key='s' /> : null
+                }
+                {
+                  listActionLeft ? <th key='lid' /> : null
                 }
                 {
                   filters.map((i, idx) => <th key={idx}>{i}</th>)
                 }
                 {
-                  listActions ? <th key='0' /> : null
+                  listActions ? <th key='li' /> : null
                 }
               </tr>
             ) : null
@@ -218,13 +205,8 @@ const BStrapDatagrid = ({
         </thead>
       ) : null}
       {
-        dragbleListEntity
-          ? <SortableWrapper
-            helperClass={dragbleHelperClass}
-            items={state.items}
-            buildCells={buildCells}
-            onSortEnd={dragbleListEntity.onDragEnd}
-            pressDelay={dragbleListEntity.dragToggleDelay} />
+        TBodyComponent
+          ? <TBodyComponent>{tableChildren}</TBodyComponent>
           : <tbody>{tableChildren}</tbody>
       }
     </table>
