@@ -31,18 +31,18 @@ const TextInput = ({attr, record, label, onChange, onHeaderCheckedChange, errors
   }
 
   return (
-    <FormGroup controlId={attr} validatiwonState={validationState}>
+    <FormGroup controlId={attr} validationState={validationState}>
       <ControlLabel>
         {label}
         { onHeaderCheckedChange && Array.isArray(onHeaderCheckedChange) && 
           onHeaderCheckedChange[0] && onHeaderCheckedChange[1]
-          ? <Checkbox 
-                inline 
-                style={{ marginLeft: '5px' }} 
-                onChange={e => onHeaderCheckedChange[1](attr, e.target.checked)} > 
+          ? <Checkbox
+                inline
+                style={{ marginLeft: '5px' }}
+                onChange={e => onHeaderCheckedChange[1](attr, e.target.checked)} >
               {onHeaderCheckedChange[0]}
-            </Checkbox> 
-          : null 
+            </Checkbox>
+          : null
         }
       </ControlLabel>
       <FormControl componentClass='input' name={attr}
