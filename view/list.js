@@ -10,7 +10,7 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, fields, filters, listActions, batchActions, renderOuter, 
+  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter, 
   perPageOptions, stableBatchActions, selectable = true
 }) => {
   //
