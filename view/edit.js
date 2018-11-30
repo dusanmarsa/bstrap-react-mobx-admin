@@ -74,7 +74,7 @@ const GlobalErrors = observer(({errors}) => {
     e.onKeyDownActions && e.preventDefault() && e.stopPropagation()
   }
 
-  render({store, onSave, onReturn2list, children, buttonOnTop, options = {}} = this.props) {
+  render({store, onSave, onReturn2list, children, buttonOnTop, options = {}, showButtons = true} = this.props) {
 
     const loading = store.state === 'loading' || store.state === 'saving'
     onSave = onSave || store.save.bind(store)
@@ -123,7 +123,7 @@ const GlobalErrors = observer(({errors}) => {
       <div className='card'>
         <div className='card-block'>
           <h4 className='card-title'>{title}</h4>
-          { buttonOnTop ? actionButtons() : null }
+          { buttonOnTop && showButtons ? actionButtons() : null }
         </div>
 
         <div className='card-block'>
@@ -132,7 +132,7 @@ const GlobalErrors = observer(({errors}) => {
         </div>
 
         <div className='card-block'>
-          { actionButtons(false) }
+          { showButtons && actionButtons(false) }
         </div>
       </div>
     )

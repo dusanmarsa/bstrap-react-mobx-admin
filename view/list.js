@@ -10,7 +10,8 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, stableBatchActions, renderOuter, perPageOptions
+  store, onAddClicked, fields, filters, listActions, batchActions, renderOuter, 
+  perPageOptions, stableBatchActions, selectable = true
 }) => {
   //
   const nbPages = parseInt(store.totalItems)
@@ -122,8 +123,10 @@ const BStrapListView = ({
           listActions={listActions}
           onSort={store.updateSort.bind(store)} sortstate={store.router.queryParams}
           noSort={store.noSort}
-          onRowSelection={onSelectionChange} isSelected={isSelected}
-          allSelected={allSelected} filters={filterRow} />
+          onRowSelection={selectable ? onSelectionChange : undefined} 
+          isSelected={isSelected}
+          allSelected={allSelected} 
+          filters={filterRow}  />
       </div>
       { pagination }
     </div>
