@@ -10,19 +10,21 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, fields, filters, listActions, batchActions, renderOuter, perPageOptions
+  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, stableBatchActions, renderOuter, perPageOptions
 }) => {
   //
   const nbPages = parseInt(store.totalItems)
   filters = filters && filters.call ? filters() : filters
   const perPageTitle = store.router.queryParams._perPage || ''
   perPageOptions = perPageOptions || store.perPageOptions || [5, 10, 15, 20, 50, 100]
-  
+
   let shiftDown = observable.box(false)
 
   window.addEventListener('keydown', e => {
-    if(e.keyCode === 16) {
+    if (e.keyCode === 16) {
       shiftDown.set(true)
+      e.preventDefault()
+      e.stopPropagation()
     }
   })
 
@@ -44,6 +46,7 @@ const BStrapListView = ({
           }
         }
         store.updateSelection(newSelection)
+        shiftDown.set(false)
         return
       }
     }
@@ -99,12 +102,14 @@ const BStrapListView = ({
         <div className='pull-right'>
           <ButtonGroup>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
+            {stableBatchActions && stableBatchActions()}
             {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
             {filters && (
               <Filters.Dropdown state={store} title='addfilter' filters={filters}
                 showFilter={store.showFilter.bind(store)} />
             )}
             {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
+            {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
           </ButtonGroup>
         </div>
         {store.title ? <h4 className='card-title'>{store.title}</h4> : null}
@@ -131,10 +136,12 @@ BStrapListView.propTypes = {
   store: PropTypes.instanceOf(ListStore).isRequired,
   renderOuter: PropTypes.func,
   onAddClicked: PropTypes.func,
+  onAddClickedFL: PropTypes.func,
   fields: PropTypes.arrayOf(PropTypes.func).isRequired,
   filters: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   listActions: PropTypes.func,
   batchActions: PropTypes.func,
+  stableBatchActions: PropTypes.func,
   perPageOptions: PropTypes.arrayOf(PropTypes.number)
 }
 export default observer(BStrapListView)

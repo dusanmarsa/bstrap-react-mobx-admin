@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
-import { FormGroup, ControlLabel, FormControl, HelpBlock } from 'react-bootstrap'
+import { FormGroup, ControlLabel, FormControl, HelpBlock, Checkbox } from 'react-bootstrap'
 
 const SelectInput = ({
-  attr, labelattr, valueattr, label, record,
+  attr, labelattr, valueattr, label, record, onHeaderCheckedChange,
   options, optionsrecord, optionsattr, errors, onChange, ...rest
 }) => {
   //
@@ -39,7 +39,19 @@ const SelectInput = ({
     renderOptions(options, labelattr || 'label', valueattr)
   return (
     <FormGroup controlId={attr} validationState={validationState}>
-      <ControlLabel>{label}</ControlLabel>
+      <ControlLabel>
+        {label}
+        { onHeaderCheckedChange && Array.isArray(onHeaderCheckedChange) && 
+          onHeaderCheckedChange[0] && onHeaderCheckedChange[1]
+          ? <Checkbox 
+                inline 
+                style={{ marginLeft: '5px' }} 
+                onChange={e => onHeaderCheckedChange[1](attr, e.target.checked)} > 
+              {onHeaderCheckedChange[0]}
+            </Checkbox> 
+          : null 
+        }
+      </ControlLabel>
       <FormControl componentClass='select' placeholder='select' {...rest}
         value={value || ''} onChange={handleChange}>
         {renderedOpts}
