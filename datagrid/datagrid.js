@@ -156,22 +156,25 @@ const BStrapDatagrid = ({
     : state.items.length === 0
       ? tableChildren = <tr><td>EMPTY</td></tr>
       : state.items.map((r, i) => {
-        const selected = selectable && isSelected(i)
-        return (
-          <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
-            {
-              selectable ? (
-                <td key='chbox'>
-                  <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
-                </td>
-              ) : null
-            }
-            {
-              buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
-            }
-          </tr>
-        )
-      })
+          const selected = selectable && isSelected(i)
+          const timeRestricted = state.store && state.store.timeRestriction && state.store.timeRestriction.checkRow(state.store, r , state) || undefined
+          return (
+            <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
+              {
+                selectable ? (
+                  <td key='chbox'>
+                    { timeRestricted && timeRestricted > 0 // can't compare ( timeRestricted === 0 ) when > 0 than is restricted
+                        ? null : <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} /> }
+                  </td>
+                ) : null
+              }
+              {
+                buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
+              }
+            </tr>
+          )
+        })
+
 
   return (
     <table className='table table-sm'>
