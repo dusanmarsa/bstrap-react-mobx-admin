@@ -10,8 +10,8 @@ import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter, 
-  perPageOptions, stableBatchActions, selectable = true
+  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
+  perPageOptions, stableBatchActions, selectable = true, dateFilter, regionFilter
 }) => {
   //
   const nbPages = parseInt(store.totalItems)
@@ -30,16 +30,16 @@ const BStrapListView = ({
   })
 
   function onSelectionChange (selection) {
-    if(shiftDown.get() && store.selection && store.selection.length > 0) {
-      if(store.selection.length > 0) {
+    if (shiftDown.get() && store.selection && store.selection.length > 0) {
+      if (store.selection.length > 0) {
         let first = store.selection[0]
         let newSelection = []
 
-        if(selection < first) {
+        if (selection < first) {
           for (let i = selection; i <= first; i++) {
             newSelection.push(i)
           }
-        } else if(selection == first) {
+        } else if (selection == first) {
           store.toggleIndex(selection)
         } else {
           for (let i = first; i <= selection; i++) {
@@ -51,14 +51,15 @@ const BStrapListView = ({
         return
       }
     }
-      if (selection === 'all') {
-        store.selectAll()
-      } else if (selection.length === 0) {
-        store.updateSelection([])
-      } else { // we have receive index of selected item
-        // so toggle the selection of da index
-        store.toggleIndex(selection)
-      }
+
+    if (selection === 'all') {
+      store.selectAll()
+    } else if (selection.length === 0) {
+      store.updateSelection([])
+    } else { // we have receive index of selected item
+      // so toggle the selection of da index
+      store.toggleIndex(selection)
+    }
   }
 
   function isSelected (idx) {
@@ -101,7 +102,17 @@ const BStrapListView = ({
     <div className='card'>
       <div className='card-block'>
         <div className='pull-right'>
-          <ButtonGroup>
+          {((store.attrs.includes('contract_date') && store.attrs.includes('contract_end_date')) ||
+            (store.attrs.includes('valid_from') && store.attrs.includes('valid_to'))) &&
+            dateFilter && <ButtonGroup className='btn-group-top-right'>
+              {dateFilter}
+            </ButtonGroup>
+          }
+          {store.attrs.includes('regions') && regionFilter && <ButtonGroup className='btn-group-top-right'>
+            {regionFilter}
+          </ButtonGroup>
+          }
+          <ButtonGroup style={{verticalAlign: 'top ', marginRight: '0.3em'}} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
             {stableBatchActions && stableBatchActions()}
             {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
@@ -109,6 +120,8 @@ const BStrapListView = ({
               <Filters.Dropdown state={store} title='addfilter' filters={filters}
                 showFilter={store.showFilter.bind(store)} />
             )}
+          </ButtonGroup>
+          <ButtonGroup style={{verticalAlign: 'top', marginRight: '0.3em'}} className='btn-group-top-right'>
             {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
             {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
           </ButtonGroup>
@@ -123,9 +136,9 @@ const BStrapListView = ({
           listActions={listActions}
           onSort={store.updateSort.bind(store)} sortstate={store.router.queryParams}
           noSort={store.noSort}
-          onRowSelection={selectable ? onSelectionChange : undefined} 
+          onRowSelection={selectable ? onSelectionChange : undefined}
           isSelected={isSelected}
-          allSelected={allSelected} 
+          allSelected={allSelected}
           filters={filterRow}  />
       </div>
       { pagination }
