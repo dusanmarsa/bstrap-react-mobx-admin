@@ -1,25 +1,32 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ListStore from 'react-mobx-admin/state/data_table'
-import Datagrid from '../datagrid/datagrid'
-import Filters from '../datagrid/filters'
-import Pagination from '../datagrid/pagination'
-import DatagridActions from 'react-mobx-admin/components/common/datagrid/actions'
-import { observer } from 'mobx-react'
 import { observable } from 'mobx'
-import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
+import { observer } from 'mobx-react'
+
+import Datagrid from '../datagrid/datagrid'
+import DatagridActions from 'react-mobx-admin/components/common/datagrid/actions'
+import Filters from '../datagrid/filters'
+import ListStore from 'react-mobx-admin/state/data_table'
+import Pagination from '../datagrid/pagination'
+import {
+  Button,
+  ButtonGroup,
+  DropdownButton,
+  MenuItem,
+  Modal,
+  OverlayTrigger,
+  Tooltip
+} from 'react-bootstrap'
 
 const BStrapListView = ({
   store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
-  perPageOptions, stableBatchActions, selectable = true, dateFilter, regionFilter
+  perPageOptions, stableBatchActions, selectable = true
 }) => {
-  //
   const nbPages = parseInt(store.totalItems)
-  filters = filters && filters.call ? filters() : filters
   const perPageTitle = store.router.queryParams._perPage || ''
-  perPageOptions = perPageOptions || store.perPageOptions || [5, 10, 15, 20, 50, 100]
-
-  let shiftDown = observable.box(false)
+  const shiftDown = observable.box(false)
+  filters = filters && filters.call ? filters() : filters
+  perPageOptions = perPageOptions || store.perPageOptions || [5, 10, 15, 20, 50, 100, 1000]
 
   window.addEventListener('keydown', e => {
     if (e.keyCode === 16) {
@@ -39,7 +46,7 @@ const BStrapListView = ({
           for (let i = selection; i <= first; i++) {
             newSelection.push(i)
           }
-        } else if (selection == first) {
+        } else if (selection === first) {
           store.toggleIndex(selection)
         } else {
           for (let i = first; i <= selection; i++) {
@@ -56,7 +63,8 @@ const BStrapListView = ({
       store.selectAll()
     } else if (selection.length === 0) {
       store.updateSelection([])
-    } else { // we have receive index of selected item
+    } else {
+      // we have receive index of selected item
       // so toggle the selection of da index
       store.toggleIndex(selection)
     }
@@ -96,32 +104,31 @@ const BStrapListView = ({
       </div>
     </div>
   )
+
   const filterRow = filters ? Filters.FilterRow(filters, store) : null
 
   const result = (
     <div className='card'>
       <div className='card-block'>
         <div className='pull-right'>
-          {((store.attrs.includes('contract_date') && store.attrs.includes('contract_end_date')) ||
-            (store.attrs.includes('valid_from') && store.attrs.includes('valid_to'))) &&
-            dateFilter && <ButtonGroup className='btn-group-top-right'>
-              {dateFilter}
-            </ButtonGroup>
+          { typeof store.dateFilterEnable !== 'undefined' &&
+            store.dateFilterEnable(store.attrs) &&
+            store.dateFilter
           }
-          {store.attrs.includes('regions') && regionFilter && <ButtonGroup className='btn-group-top-right'>
-            {regionFilter}
-          </ButtonGroup>
+          { typeof store.regionFilterEnable !== 'undefined' &&
+            store.regionFilterEnable(store.attrs) &&
+            store.regionFilter
           }
-          <ButtonGroup style={{verticalAlign: 'top ', marginRight: '0.3em'}} className='btn-group-top-right'>
+          <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
-            {stableBatchActions && stableBatchActions()}
+            {stableBatchActions && stableBatchActions()}
             {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
             {filters && (
               <Filters.Dropdown state={store} title='addfilter' filters={filters}
                 showFilter={store.showFilter.bind(store)} />
             )}
           </ButtonGroup>
-          <ButtonGroup style={{verticalAlign: 'top', marginRight: '0.3em'}} className='btn-group-top-right'>
+          <ButtonGroup style={{ verticalAlign: 'top', marginRight: '0.3em' }} className='btn-group-top-right'>
             {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
             {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
           </ButtonGroup>
@@ -139,7 +146,7 @@ const BStrapListView = ({
           onRowSelection={selectable ? onSelectionChange : undefined}
           isSelected={isSelected}
           allSelected={allSelected}
-          filters={filterRow}  />
+          filters={filterRow} />
       </div>
       { pagination }
     </div>
@@ -149,15 +156,15 @@ const BStrapListView = ({
 }
 
 BStrapListView.propTypes = {
-  store: PropTypes.instanceOf(ListStore).isRequired,
-  renderOuter: PropTypes.func,
-  onAddClicked: PropTypes.func,
-  onAddClickedFL: PropTypes.func,
+  batchActions: PropTypes.func,
   fields: PropTypes.arrayOf(PropTypes.func).isRequired,
   filters: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   listActions: PropTypes.func,
-  batchActions: PropTypes.func,
+  onAddClicked: PropTypes.func,
+  onAddClickedFL: PropTypes.func,
+  perPageOptions: PropTypes.arrayOf(PropTypes.number),
+  renderOuter: PropTypes.func,
   stableBatchActions: PropTypes.func,
-  perPageOptions: PropTypes.arrayOf(PropTypes.number)
+  store: PropTypes.instanceOf(ListStore).isRequired
 }
 export default observer(BStrapListView)
