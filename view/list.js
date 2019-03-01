@@ -12,10 +12,7 @@ import {
   Button,
   ButtonGroup,
   DropdownButton,
-  MenuItem,
-  Modal,
-  OverlayTrigger,
-  Tooltip
+  MenuItem
 } from 'react-bootstrap'
 
 const BStrapListView = ({
@@ -111,6 +108,12 @@ const BStrapListView = ({
     <div className='card'>
       <div className='card-block'>
         <div className='pull-right'>
+          {(batchActions || stableBatchActions) &&
+            <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
+              {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
+              {stableBatchActions && stableBatchActions()}
+            </ButtonGroup>
+          }
           { typeof store.dateFilterEnable !== 'undefined' &&
             store.dateFilterEnable(store.attrs) &&
             store.dateFilter
@@ -121,17 +124,17 @@ const BStrapListView = ({
           }
           <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
-            {stableBatchActions && stableBatchActions()}
-            {batchActions && (<DatagridActions state={store} actions={batchActions} />)}
             {filters && (
               <Filters.Dropdown state={store} title='addfilter' filters={filters}
                 showFilter={store.showFilter.bind(store)} />
             )}
           </ButtonGroup>
-          <ButtonGroup style={{ verticalAlign: 'top', marginRight: '0.3em' }} className='btn-group-top-right'>
-            {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
-            {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
-          </ButtonGroup>
+          {(onAddClicked || onAddClickedFL) &&
+            <ButtonGroup style={{ verticalAlign: 'top', marginRight: '0.3em' }} className='btn-group-top-right'>
+              {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
+              {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
+            </ButtonGroup>
+          }
         </div>
         {store.title ? <h4 className='card-title'>{store.title}</h4> : null}
       </div>

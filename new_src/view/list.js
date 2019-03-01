@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import Datagrid from '../datagrid/datagrid'
 import Filters from '../datagrid/filters'
 import Pagination from '../datagrid/pagination'
-import { observer } from 'mobx-react'
-import { observable } from 'mobx'
 import { DropdownButton, MenuItem, Button, ButtonGroup } from 'react-bootstrap'
+import { observable } from 'mobx'
+import { observer } from 'mobx-react'
 
-const DatagridActions = observer(({actions, state}) => {
+const DatagridActions = observer(({ actions, state }) => {
   return (state.selection.length > 0) ? actions(state) : null
 })
 
@@ -31,16 +31,16 @@ const BStrapListView = ({
   })
 
   function onSelectionChange (selection) {
-    if(shiftDown.get() && store.selection && store.selection.length > 0) {
-      if(store.selection.length > 0) {
+    if (shiftDown.get() && store.selection && store.selection.length > 0) {
+      if (store.selection.length > 0) {
         let first = store.selection[0]
         let newSelection = []
 
-        if(selection < first) {
+        if (selection < first) {
           for (let i = selection; i <= first; i++) {
             newSelection.push(i)
           }
-        } else if(selection == first) {
+        } else if (selection == first) {
           store.toggleIndex(selection)
         } else {
           for (let i = first; i <= selection; i++) {
@@ -52,14 +52,14 @@ const BStrapListView = ({
         return
       }
     }
-      if (selection === 'all') {
-        store.selectAll()
-      } else if (selection.length === 0) {
-        store.updateSelection([])
-      } else { // we have receive index of selected item
-        // so toggle the selection of da index
-        store.toggleIndex(selection)
-      }
+    if (selection === 'all') {
+      store.selectAll()
+    } else if (selection.length === 0) {
+      store.updateSelection([])
+    } else { // we have receive index of selected item
+      // so toggle the selection of da index
+      store.toggleIndex(selection)
+    }
   }
 
   function isSelected (idx) {
@@ -100,7 +100,7 @@ const BStrapListView = ({
   const title = options.title ? options.title() : null
   const refFn = (node, row) => {
     if (row.id === store.scrollTo) {
-      node && node.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'})
+      node && node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
     }
   }
 
@@ -108,12 +108,12 @@ const BStrapListView = ({
     <div className='card'>
       <div className='card-block'>
         <div className='pull-right'>
-          <ButtonGroup>
-            {
-              batchActions ? (
-                <DatagridActions state={store} actions={batchActions} />
-              ) : null
-            }
+          { batchActions &&
+            <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
+              <DatagridActions state={store} actions={batchActions} />
+            </ButtonGroup>
+          }
+          <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             {
               filters ? (
                 <Filters.Dropdown store={store} filters={filters} />
@@ -132,7 +132,7 @@ const BStrapListView = ({
         </div>
         {title ? <h4 className='card-title'>{title}</h4> : null}
       </div>
-      <div style={{clear: 'both'}}>
+      <div style={{ clear: 'both' }}>
         { filtersRender }
       </div>
       <div className='card-block'>
