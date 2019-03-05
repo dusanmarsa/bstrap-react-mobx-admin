@@ -114,13 +114,13 @@ const BStrapListView = ({
               {stableBatchActions && stableBatchActions()}
             </ButtonGroup>
           }
-          { typeof store.dateFilterEnable !== 'undefined' &&
-            store.dateFilterEnable(store.attrs) &&
-            store.dateFilter
+          { typeof store.store.dateFilterEnable !== 'undefined' &&
+            store.store.dateFilterEnable(store.attrs) &&
+            store.store.dateFilter
           }
-          { typeof store.regionFilterEnable !== 'undefined' &&
-            store.regionFilterEnable(store.attrs) &&
-            store.regionFilter
+          { typeof store.store.regionFilterEnable !== 'undefined' &&
+            store.store.regionFilterEnable(store.attrs) &&
+            store.store.regionFilter
           }
           <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
