@@ -87,7 +87,7 @@ const FilterRow = (filters, store) => {
       filtername = k
       return filtername.indexOf(attr) >= 0
     })
-    const isApplied = filtername in store.appliedFilters || (filtername + '__between') in store.appliedFilters
+    const isApplied = filtername in store.appliedFilters || (filtername + '__to') in store.appliedFilters
     return filter ? (
       <InputGroup>
         {
