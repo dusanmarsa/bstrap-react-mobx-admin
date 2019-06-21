@@ -122,6 +122,10 @@ const BStrapListView = ({
             store.store.regionFilterEnable(store.attrs) &&
             store.store.regionFilter
           }
+          { typeof store.store.historicDataFilterEnable !== 'undefined' &&
+            store.store.historicDataFilterEnable(store.attrs) &&
+            store.store.historicDataFilter
+          }
           <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
             {filters && (
