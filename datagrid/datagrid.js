@@ -2,20 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { observer } from 'mobx-react'
 import { Checkbox, Button, OverlayTrigger, Tooltip } from 'react-bootstrap'
-import {
-  buildHeaders, buildCells
-} from 'react-mobx-admin/components/common/datagrid/table'
-import {SortableContainer, SortableElement, SortableHandle} from 'react-sortable-hoc';
+import { buildHeaders, buildCells } from 'react-mobx-admin/components/common/datagrid/table'
+import { SortableContainer, SortableElement } from 'react-sortable-hoc'
 
-const BStrapHeader = ({state, label, sort, name, onSort}) => {
-
-  //
+const BStrapHeader = ({ state, label, sort, name, onSort }) => {
   function _onUpClick (e) {
     onSort(name, sort === 'ASC' ? null : 'ASC')
-
-    state && state.store &&
-    state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
+    state && state.store && state.store.setEntityLastState(state.store.cv.entityname, state.store.router.queryParams)
   }
+
   function _onDownClick (e) {
     onSort(name, sort === 'DESC' ? null : 'DESC')
 
@@ -39,12 +34,12 @@ const BStrapHeader = ({state, label, sort, name, onSort}) => {
     </div>
   )
 }
-
 BStrapHeader.propTypes = {
   label: PropTypes.string.isRequired,
-  sort: PropTypes.string,
   name: PropTypes.string,
-  onSort: PropTypes.func
+  onSort: PropTypes.func,
+  sort: PropTypes.string,
+  state: PropTypes.object.isRequired
 }
 
 const BStrapDatagrid = ({
@@ -52,7 +47,9 @@ const BStrapDatagrid = ({
   onRowSelection, onSort, sortstate, listActions, listActionDelete, allSelected,
   filters, dragbleListEntity, customRowStyleClass, dragbleHelperClass
 }) => {
-  //
+  const listActionsRender = listActions && (<th key={'_actions'}>{listActions()}</th>)
+  const listActionDeleteRender = listActionDelete && (<th key={'_actions-delete'}>{listActionDelete()}</th>)
+
   function _renderHeader (name, label, sort, onSort) {
     return (
       <th key={`th_${name}`}>
@@ -63,19 +60,9 @@ const BStrapDatagrid = ({
     )
   }
 
-  const listActionsRender = listActions ? (
-    <th key={'_actions'}>{listActions()}</th>
-  ) : null
-
-  const listActionDeleteRender = listActionDelete ? (
-    <th key={'_actions-delete'}>{listActionDelete()}</th>
-  ) : null
-
   function _renderCell (row, name, creatorFn, rowId) {
     return (
-      <td key={`td_${rowId}_${name}`}>
-        {creatorFn(name, row)}
-      </td>
+      <td key={`td_${rowId}_${name}`}>{creatorFn(name, row)}</td>
     )
   }
 
@@ -86,9 +73,9 @@ const BStrapDatagrid = ({
   }
 
   function _renderRowActionDelete (row) {
-    return listActionDelete ? (
-      <td key={'datagrid-actions-delete'}>{listActionDelete(row)}</td>
-    ) : null
+    return listActionDelete
+      ? (<td key={'datagrid-actions-delete'}>{listActionDelete(row)}</td>)
+      : null
   }
 
   function _onSelectAll (e) {
@@ -132,9 +119,9 @@ const BStrapDatagrid = ({
   }
 
   const selectable = onRowSelection !== undefined && isSelected !== undefined
-  const SortableItem = SortableElement(({row, children}) =>
-    <tr className={ customRowStyleClass ? customRowStyleClass(row) : 'noClass' } >{children}</tr> )
-  const SortableWrapper = SortableContainer(({items, buildCells}) => {
+  const SortableItem = SortableElement(({ row, children }) =>
+    <tr className={customRowStyleClass ? customRowStyleClass(row) : 'noClass'} >{children}</tr>)
+  const SortableWrapper = SortableContainer(({ items, buildCells }) => {
     return (<tbody>
       {
         items.map((r, index) => (
@@ -151,20 +138,25 @@ const BStrapDatagrid = ({
     )
   })
 
-  let tableChildren = state.state === 'loading'
+  let tableChildren
+  tableChildren = state.state === 'loading'
     ? <tr><td><span className='glyphicon glyphicon-refresh glyphicon-refresh-animate' /> Loading...</td></tr>
     : state.items.length === 0
       ? tableChildren = <tr><td>EMPTY</td></tr>
       : state.items.map((r, i) => {
         const selected = selectable && isSelected(i)
+        const timeRestricted = (state.store && state.store.timeRestriction && state.store.timeRestriction.checkRow(state.store, r, state)) || undefined
         return (
-          <tr selected={selected} key={i} className={ customRowStyleClass ? customRowStyleClass(r) : 'noClass' }>
+          <tr selected={selected} key={i} className={customRowStyleClass ? customRowStyleClass(r) : 'noClass'}>
             {
-              selectable ? (
+              selectable && (
                 <td key='chbox'>
-                  <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
+                  { timeRestricted && timeRestricted > 0 // can't compare ( timeRestricted === 0 ) when > 0 than is restricted
+                    ? null
+                    : <Checkbox checked={selected} inline onChange={() => onRowSelection(i)} />
+                  }
                 </td>
-              ) : null
+              )
             }
             {
               buildCells(attrs, fields, r, rowId, _renderCell, _renderRowActions, _renderRowActionDelete)
@@ -178,28 +170,30 @@ const BStrapDatagrid = ({
       {titles ? (
         <thead>
           <tr>
-            { selectable ? <th>
-              <div className='sort-buttons-box'>
-                <OverlayTrigger
-                  placement='right'
-                  overlay={<Tooltip>{
-                    !sortstate._sortField
-                      ? 'Sets filters and sorting to the default state'
-                      : 'Reset filters and sorting to the clean state'
-                  }</Tooltip>}>
-                  <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
-                    <span className={'glyphicon glyphicon-ban-circle'} />
-                  </Button>
-                </OverlayTrigger>
-              </div>
-            </th> : null }
+            { selectable && (
+              <th>
+                <div className='sort-buttons-box'>
+                  <OverlayTrigger
+                    placement='right'
+                    overlay={<Tooltip>{
+                      !sortstate._sortField
+                        ? 'Sets filters and sorting to the default state'
+                        : 'Reset filters and sorting to the clean state'
+                    }</Tooltip>}>
+                    <Button bsStyle={'default'} bsSize='xsmall' onClick={handleResetButton}>
+                      <span className={'glyphicon glyphicon-ban-circle'} />
+                    </Button>
+                  </OverlayTrigger>
+                </div>
+              </th>
+            )}
             {
               buildHeaders(attrs, titles, _renderHeader, listActionsRender,
                 onSort, sortstate, noSort, listActionDeleteRender)
             }
           </tr>
           {
-            filters ? (
+            filters && (
               <tr className='filter-row'>
                 {
                   selectable ? <th key='chbox'>
@@ -213,8 +207,7 @@ const BStrapDatagrid = ({
                   listActions ? <th key='0' /> : null
                 }
               </tr>
-            ) : null
-          }
+            )}
         </thead>
       ) : null}
       {
