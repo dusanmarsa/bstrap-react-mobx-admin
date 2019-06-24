@@ -114,13 +114,13 @@ const BStrapListView = ({
               {stableBatchActions && stableBatchActions()}
             </ButtonGroup>
           }
-          { typeof store.store.dateFilterEnable !== 'undefined' &&
-            store.store.dateFilterEnable(store.attrs) &&
-            store.store.dateFilter
-          }
           { typeof store.store.regionFilterEnable !== 'undefined' &&
             store.store.regionFilterEnable(store.attrs) &&
             store.store.regionFilter
+          }
+          { typeof store.store.dateFilterEnable !== 'undefined' && 
+            store.store.dateFilterEnable(store.attrs) &&
+            store.store.dateFilter
           }
           { typeof store.store.historicDataFilterEnable !== 'undefined' &&
             store.store.historicDataFilterEnable(store.attrs) &&
