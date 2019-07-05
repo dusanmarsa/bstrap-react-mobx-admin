@@ -12,12 +12,14 @@ import {
   Button,
   ButtonGroup,
   DropdownButton,
-  MenuItem
+  MenuItem,
+  Tooltip,
+  OverlayTrigger
 } from 'react-bootstrap'
 
 const BStrapListView = ({
   store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
-  perPageOptions, stableBatchActions, selectable = true
+  perPageOptions, stableBatchActions, selectable = true, helper = null
 }) => {
   const nbPages = parseInt(store.totalItems)
   const perPageTitle = store.router.queryParams._perPage || ''
@@ -136,7 +138,20 @@ const BStrapListView = ({
             </ButtonGroup>
           }
         </div>
-        {store.title ? <h4 className='card-title'>{store.title}</h4> : null}
+        {
+          store.title 
+            ? <h4 className='card-title'>
+                { store.title }
+                { helper && <OverlayTrigger
+                    placement='right'
+                    overlay={<Tooltip className="tooltip-autowidth">
+                      <div style={{ whiteSpace: 'pre', textAlign: 'left'}}>{ helper }</div></Tooltip>}>
+                      <i style={{ fontSize: '14px', marginLeft: '5px' }} class="glyphicon glyphicon-question-sign"></i>
+                    </OverlayTrigger> 
+                }
+              </h4> 
+            : null
+        }
       </div>
       { filtersRender }
       <div className='card-block'>
