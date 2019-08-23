@@ -18,7 +18,7 @@ import {
 } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
+  store, onAddClicked, onAddClicked2, onAddClicked2text, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
   perPageOptions, stableBatchActions, selectable = true, helper = null
 }) => {
   const nbPages = parseInt(store.totalItems)
@@ -120,7 +120,7 @@ const BStrapListView = ({
             store.store.regionFilterEnable(store.attrs) &&
             store.store.regionFilter
           }
-          { typeof store.store.dateFilterEnable !== 'undefined' && 
+          { typeof store.store.dateFilterEnable !== 'undefined' &&
             store.store.dateFilterEnable(store.attrs) &&
             store.store.dateFilter
           }
@@ -138,23 +138,26 @@ const BStrapListView = ({
           {(onAddClicked || onAddClickedFL) &&
             <ButtonGroup style={{ verticalAlign: 'top', marginRight: '0.3em' }} className='btn-group-top-right'>
               {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
+              {onAddClicked && onAddClicked2 && <Button bsStyle='primary' onClick={() => onAddClicked2(store)}>
+                {(store.addText && store.addText[0]) || '+'} {onAddClicked2text || ''}</Button>
+              }
               {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
             </ButtonGroup>
           }
         </div>
-        {
-          store.title 
-            ? <h4 className='card-title'>
-                { store.title }
-                { helper && <OverlayTrigger
-                    placement='right'
-                    overlay={<Tooltip className="tooltip-autowidth">
-                      <div style={{ whiteSpace: 'pre', textAlign: 'left'}}>{ helper }</div></Tooltip>}>
-                      <i style={{ fontSize: '14px', marginLeft: '5px' }} class="glyphicon glyphicon-question-sign"></i>
-                    </OverlayTrigger> 
-                }
-              </h4> 
-            : null
+        {store.title
+          ? <h4 className='card-title'>
+            { store.title }
+            { helper &&
+            <OverlayTrigger
+              placement='right'
+              overlay={<Tooltip className='tooltip-autowidth'>
+                <div style={{ whiteSpace: 'pre', textAlign: 'left' }}>{ helper }</div></Tooltip>}>
+              <i style={{ fontSize: '14px', marginLeft: '5px' }} className='glyphicon glyphicon-question-sign' />
+            </OverlayTrigger>
+            }
+          </h4>
+          : null
         }
       </div>
       { filtersRender }
