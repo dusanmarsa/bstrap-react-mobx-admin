@@ -19,7 +19,7 @@
   "repository": "https://github.com/blueskydigital/bstrap-react-mobx-admin",
   "license": "ISC",
   "peerDependencies": {
-    "axios": "^0.14.0",
+    "axios": "^0.19.0",
     "react-bootstrap": "^0.30.10",
     "react-datepicker": "0.40.0",
     "mobx": "^2.7.0",
