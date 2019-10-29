@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "description": "blog example made with react-mobx-admin and bootstrap",
   "dependencies": {
-    "axios": "^0.14.0",
+    "axios": "^0.19.0",
     "mobx": "^2.3.7",
     "mobx-react": "^3.5.1",
     "react": "^15.2.1"
