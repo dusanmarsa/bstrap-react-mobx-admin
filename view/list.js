@@ -12,12 +12,14 @@ import {
   Button,
   ButtonGroup,
   DropdownButton,
-  MenuItem
+  MenuItem,
+  Tooltip,
+  OverlayTrigger
 } from 'react-bootstrap'
 
 const BStrapListView = ({
-  store, onAddClicked, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
-  perPageOptions, stableBatchActions, selectable = true
+  store, onAddClicked, onAddClicked2, onAddClicked2text, onAddClickedFL, fields, filters, listActions, batchActions, renderOuter,
+  perPageOptions, stableBatchActions, selectable = true, helper = null
 }) => {
   const nbPages = parseInt(store.totalItems)
   const perPageTitle = store.router.queryParams._perPage || ''
@@ -114,13 +116,17 @@ const BStrapListView = ({
               {stableBatchActions && stableBatchActions()}
             </ButtonGroup>
           }
+          { typeof store.store.regionFilterEnable !== 'undefined' &&
+            store.store.regionFilterEnable(store.attrs) &&
+            store.store.regionFilter
+          }
           { typeof store.store.dateFilterEnable !== 'undefined' &&
             store.store.dateFilterEnable(store.attrs) &&
             store.store.dateFilter
           }
-          { typeof store.store.regionFilterEnable !== 'undefined' &&
-            store.store.regionFilterEnable(store.attrs) &&
-            store.store.regionFilter
+          { typeof store.store.historicDataFilterEnable !== 'undefined' &&
+            store.store.historicDataFilterEnable(store.attrs) &&
+            store.store.historicDataFilter
           }
           <ButtonGroup style={{ verticalAlign: 'top ', marginRight: '0.3em' }} className='btn-group-top-right'>
             <Filters.Apply state={store} label={'apply filters'} apply={store.applyFilters.bind(store)} />
@@ -132,11 +138,27 @@ const BStrapListView = ({
           {(onAddClicked || onAddClickedFL) &&
             <ButtonGroup style={{ verticalAlign: 'top', marginRight: '0.3em' }} className='btn-group-top-right'>
               {onAddClicked && <Button bsStyle='primary' onClick={() => onAddClicked(store)}>{store.addText || '+'}</Button>}
+              {onAddClicked && onAddClicked2 && <Button bsStyle='primary' onClick={() => onAddClicked2(store)}>
+                {(store.addText && store.addText[0]) || '+'} {onAddClicked2text || ''}</Button>
+              }
               {onAddClickedFL && <Button bsStyle='primary' onClick={() => onAddClickedFL(store)}>{store.addText || '+'} {'from last'}</Button>}
             </ButtonGroup>
           }
         </div>
-        {store.title ? <h4 className='card-title'>{store.title}</h4> : null}
+        {store.title
+          ? <h4 className='card-title'>
+            { store.title }
+            { helper &&
+            <OverlayTrigger
+              placement='right'
+              overlay={<Tooltip className='tooltip-autowidth'>
+                <div style={{ whiteSpace: 'pre', textAlign: 'left' }}>{ helper }</div></Tooltip>}>
+              <i style={{ fontSize: '14px', marginLeft: '5px' }} className='glyphicon glyphicon-question-sign' />
+            </OverlayTrigger>
+            }
+          </h4>
+          : null
+        }
       </div>
       { filtersRender }
       <div className='card-block'>
