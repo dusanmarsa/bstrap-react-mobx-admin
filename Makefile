@@ -10,4 +10,4 @@ mock-server:
 	@node ./node_modules/react-mobx-admin/fake_backend/index.js &
 
 test:
-	@NODE_ENV=test ./node_modules/.bin/tape -r babel-register -r ./tests/setup.js ./**/*.spec.js
+	@NODE_ENV=test ./node_modules/.bin/tape -r @babel/register -r ./tests/setup.js ./**/*.spec.js
