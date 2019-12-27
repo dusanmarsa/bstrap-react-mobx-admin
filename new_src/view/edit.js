@@ -126,8 +126,11 @@ const GlobalErrors = observer(({errors}) => {
     return (
       <div className='card'>
         <div className='card-block'>
-          <h4 className='card-title'>{title}</h4>
-          { buttonsOnTop ? actionButtons() : null }
+          <h4 className='card-title'>
+            {title}
+            <span className='right-float'>ID: {store.record.has('id') ? store.record.get('id') : <em>new</em>}</span>    
+          </h4>
+          {buttonsOnTop ? actionButtons() : null}
         </div>
 
         <div className='card-block'>
