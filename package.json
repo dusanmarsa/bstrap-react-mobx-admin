@@ -21,11 +21,19 @@
   "peerDependencies": {
     "axios": "^0.19.0",
     "react-bootstrap": "^0.31.5",
-    "react-datepicker": "0.62.0",
     "mobx": "^5.15.0",
     "mobx-react": "^5.4.4",
-    "mobx-router": "0.0.7",
+    "mobx-router": "github:vencax/mobx-router",
     "react": "^16.11"
+  },
+  "dependencies": {
+    "react-addons-test-utils": "^15.3.0",
+    "react-bootstrap": "^0.31.5",
+    "react-bootstrap-date-picker": "github:maxaggedon/react-bootstrap-date-picker",
+    "react-bootstrap-typeahead": "^2.3.0",    
+    "react-datepicker": "0.62.0",    
+    "react-mobx-admin": "github:blueskydigital/react-mobx-admin",
+    "react-sortable-hoc": "^0.6.8"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",
@@ -42,9 +50,6 @@
     "jsdom": "^9.8.3",
     "json-server": "^0.15.0",
     "mobx-react-devtools": "^4.2.15",
-    "react-addons-test-utils": "^15.3.0",
-    "react-bootstrap": "^0.31.5",
-    "react-mobx-admin": "blueskydigital/react-mobx-admin",
     "tape": "^4.6.2",
     "webpack": "^4.41.2",
     "webpack-dev-server": "^3.9.0",
@@ -52,9 +57,5 @@
   },
   "scripts": {
     "test": "make test"
-  },
-  "dependencies": {
-    "mobx-router": "github:vencax/mobx-router",
-    "react-bootstrap-date-picker": "github:maxaggedon/react-bootstrap-date-picker"
   }
 }
